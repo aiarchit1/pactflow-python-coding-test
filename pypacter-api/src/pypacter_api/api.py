@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
-from pypacter.language_detection import detect_language
+from src.pypacter import language_detection
 
 app = Flask(__name__)
 
 @app.route('/detect-language', methods=['POST'])
-def detect_language():
+def detect_language() -> jsonify:
     """
     Endpoint to detect the programming language of a code snippet.
 
@@ -21,8 +21,6 @@ def detect_language():
     if not code_snippet:
         return jsonify({'error': 'Code snippet not provided'})
 
-    detected_language = detect_language(code_snippet)
+    detected_language = language_detection.detect_language(code_snippet)
     return jsonify({'detected_language': detected_language})
 
-if __name__ == '__main__':
-    app.run(debug=True)

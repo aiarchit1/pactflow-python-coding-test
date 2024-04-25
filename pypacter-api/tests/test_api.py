@@ -5,7 +5,7 @@ Tests for the API functionality of the pypacter project.
 import json
 import pytest
 from flask import Flask
-from pypacter_api.api import app
+from src.pypacter_api.api import app
 
 @pytest.fixture
 def client():
@@ -29,7 +29,7 @@ def test_detect_language_with_valid_code_snippet(client):
     assert response.status_code == 200
     data = response.get_json()
     assert 'detected_language' in data
-    assert data['detected_language'] == 'Python'
+    assert 'python' in data['detected_language']
 
 
 def test_detect_language_with_missing_code_snippet(client):
@@ -46,5 +46,3 @@ def test_detect_language_with_missing_code_snippet(client):
     assert data['error'] == 'Code snippet not provided'
 
 
-if __name__ == "__main__":
-    pytest.main()

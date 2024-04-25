@@ -1,20 +1,15 @@
-# Import required packages
-try:
-    from transformers import pipeline
-except ImportError:
-    import subprocess
-    import sys
-    print("transformers is not installed. Installing transformers...")
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'transformers'])
-    from transformers import pipeline
+"""
+Programming language detection
+"""
 
-# Load the language detection pipeline
-language_detection_pipeline = pipeline("zero-shot-classification")
+from langchain.chains.llm import LLMChain
+from langchain.prompts import PromptTemplate
+from pypacter import models
 
 
 def detect_language(code_snippet):
     """
-    Detect the programming language of a given code snippet.
+    Detect the most likely programming language of a given code snippet.
 
     Args:
         code_snippet (str): The code snippet to analyze.
@@ -22,14 +17,14 @@ def detect_language(code_snippet):
     Returns:
         str: The detected programming language.
     """
-    # Add code here to detect the language of the code snippet
-    # This could involve using a language detection library or any other method you prefer
-    candidate_labels = ["Python", "Java", "C++", "JavaScript", "Ruby", "Go", "Swift", "Rust", "PHP", "HTML", "CSS"]
 
-    # Example using a dummy function
-    detected_languages = language_detection_pipeline(code_snippet, candidate_labels)
+    template = """you are a programming language interpreter and
+    return only programming language name for '{code_snippet}' code snippet."""
 
-    # Extract the most probable label (programming language)
-    detected_language = detected_languages["labels"][0]
-
-    return detected_language
+    prompt = PromptTemplate(
+        input_variables=["code_snippet"],
+        template=template
+        )
+    chain = LLMChain(llm=models.DEFAULT_MODEL, prompt=prompt)
+    output = chain.run({"code_snippet": code_snippet})
+    return str(output["text"]).lower()
